@@ -1,9 +1,12 @@
 const express = require('express')
+const path = require("path");
 const app = express()
 const port = 3000
 
-app.get('/', (req, res) => {
-    res.send('Welcome to S.E.E.D!')
+app.use(express.static(path.join(__dirname, "/public")))
+
+app.get('*', (_req, res) => {
+    res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
 })
 
 app.listen(port, () => {
