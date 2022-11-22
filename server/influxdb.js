@@ -1,4 +1,4 @@
-const CONFIG = require('./config');
+const CONFIG = require('../../config');
 const { InfluxDB, Point } = require('@influxdata/influxdb-client')
 const url = `http://localhost:8086`
 const org = `APSC200_Team08`
