@@ -45,13 +45,13 @@ const sensor = require('./api/sensor')
 app.use('/api/auth', auth)
 app.use('/api/sensor_reading', sensor)
 
-// // Static folder
-// app.use(express.static(path.join(__dirname, "/public")))
+// Static folder
+app.use(express.static(path.join(__dirname, "/public")))
 
-// // Handle SPA
-// app.get('/', (_req, res) => {
-//     res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
-// })
+// Handle SPA
+app.get('/', (_req, res) => {
+    res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
+})
 
 app.listen(port, () => {
     console.log(`App listening on port ${port}`)
