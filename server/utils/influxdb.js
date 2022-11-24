@@ -1,6 +1,6 @@
-const CONFIG = require('../../config');
+const CONFIG = require('./config'); // ../../../config
 const { InfluxDB, Point } = require('@influxdata/influxdb-client')
-const url = `http://localhost:8086`
+const url = `http://34.172.137.39:8086` // http://localhost:8086
 const org = `APSC200_Team08`
 const bucket = `seed_genesis_device_0`
 
