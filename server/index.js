@@ -27,8 +27,10 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // Define API
 const auth = require('./api/auth')
 const sensor = require('./api/sensor')
+const report = require('./api/report')
 app.use('/api/auth', auth)
 app.use('/api/sensor_reading', sensor)
+app.use('/api/report', report)
 
 // Static folder
 app.use(express.static(path.join(__dirname, "/public")))

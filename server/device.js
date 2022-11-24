@@ -26,6 +26,10 @@ class Device {
     }
 
     updateForceSensorReading(fsr0, fsr1, fsr2, fsr3) {
+        this.sensors.fsr0 = fsr0
+        this.sensors.fsr1 = fsr1
+        this.sensors.fsr2 = fsr2
+        this.sensors.fsr3 = fsr3
         let point = new Point('sensors_reading')
             .tag('force_sensor', 'GHF-10')
             .intField('fsr0', parseFloat(fsr0))
@@ -45,6 +49,8 @@ class Device {
     }
 
     updateTemperatureSensorReading(temp0, temp1) {
+        this.sensors.temp0 = temp0
+        this.sensors.temp1 = temp1
         let point = new Point('sensors_reading')
             .tag('temperature_sensor', 'TMP36')
             .intField('temp0', parseFloat(temp0))
