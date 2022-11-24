@@ -40,7 +40,7 @@ class WebSocketServer {
     }
 
     // TODO: identify id for different device in the future
-    subhandler(ws, dict) {
+    subHandler(ws, dict) {
         switch (dict.channel) {
             case 'sensor_reading':
                 this.subSensorReadingMap.set(ws, true)
