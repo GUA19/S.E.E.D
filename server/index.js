@@ -2,7 +2,7 @@ const express = require('express')
 const path = require("path");
 const bodyParser = require('body-parser');
 const app = express()
-const port = 5000
+const port = 80
 
 // authentication
 var { expressjwt: expressJwt } = require('express-jwt');
@@ -18,7 +18,7 @@ var jwtCheck = expressJwt({
     issuer: 'https://dev-tiaw1wsapmz8vlky.us.auth0.com/',
     algorithms: ['RS256']
 });
-app.use(jwtCheck);
+// app.use(jwtCheck);
 app.get('/api/authorized', function (req, res) {
     res.send('Secured Resource');
 });

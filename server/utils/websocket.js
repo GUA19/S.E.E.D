@@ -36,7 +36,7 @@ class WebSocketServer {
             })
         });
         this.on = true
-        server.listen(5001, () => console.log(`Ws lisening on port 5000`))
+        server.listen(5000, () => console.log(`Ws lisening on port 5000`))
     }
 
     // TODO: identify id for different device in the future

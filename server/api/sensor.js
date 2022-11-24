@@ -4,7 +4,7 @@ var jwtAuthz = require('express-jwt-authz');
 var scopeCheck = jwtAuthz(['read:db'], { customUserKey: 'auth' })
 
 // TODO: delete this api
-router.get('/', scopeCheck, async (req, res) => {
+router.get('/', async (req, res) => {
     if ('component' in req.query) {
         let returnVal = 0
         const queryApi = globalInfluxClient.getQueryApi()
