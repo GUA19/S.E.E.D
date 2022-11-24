@@ -18,7 +18,7 @@ var jwtCheck = expressJwt({
     issuer: 'https://dev-tiaw1wsapmz8vlky.us.auth0.com/',
     algorithms: ['RS256']
 });
-app.use(jwtCheck);
+// app.use(jwtCheck);
 app.get('/api/authorized', function (req, res) {
     res.send('Secured Resource');
 });
