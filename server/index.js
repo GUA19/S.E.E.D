@@ -14,7 +14,7 @@ var jwtCheck = expressJwt({
         jwksRequestsPerMinute: 5,
         jwksUri: 'https://dev-tiaw1wsapmz8vlky.us.auth0.com/.well-known/jwks.json'
     }),
-    audience: 'http://34.172.137.39/api/',
+    audience: 'http://34.172.137.39/api',
     issuer: 'https://dev-tiaw1wsapmz8vlky.us.auth0.com/',
     algorithms: ['RS256']
 });
