@@ -2,7 +2,7 @@ const express = require('express')
 const path = require("path");
 const bodyParser = require('body-parser');
 const app = express()
-const port = 80
+const port = 5000
 
 // authentication
 var { expressjwt: expressJwt } = require('express-jwt');
@@ -18,7 +18,7 @@ var jwtCheck = expressJwt({
     issuer: 'https://dev-tiaw1wsapmz8vlky.us.auth0.com/',
     algorithms: ['RS256']
 });
-// app.use(jwtCheck);
+app.use(jwtCheck);
 app.get('/api/authorized', function (req, res) {
     res.send('Secured Resource');
 });
@@ -45,13 +45,13 @@ const sensor = require('./api/sensor')
 app.use('/api/auth', auth)
 app.use('/api/sensor_reading', sensor)
 
-// Static folder
-app.use(express.static(path.join(__dirname, "/public")))
+// // Static folder
+// app.use(express.static(path.join(__dirname, "/public")))
 
-// Handle SPA
-app.get('/', (_req, res) => {
-    res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
-})
+// // Handle SPA
+// app.get('/', (_req, res) => {
+//     res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
+// })
 
 app.listen(port, () => {
     console.log(`App listening on port ${port}`)
