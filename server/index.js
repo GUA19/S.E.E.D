@@ -14,11 +14,14 @@ var jwtCheck = expressJwt({
         jwksRequestsPerMinute: 5,
         jwksUri: 'https://dev-tiaw1wsapmz8vlky.us.auth0.com/.well-known/jwks.json'
     }),
-    audience: 'http://34.172.137.39:80/api',
+    audience: 'http://34.172.137.39/api/',
     issuer: 'https://dev-tiaw1wsapmz8vlky.us.auth0.com/',
     algorithms: ['RS256']
 });
 app.use(jwtCheck);
+app.get('/api/authorized', function (req, res) {
+    res.send('Secured Resource');
+});
 
 // Initialize database
 const InfluxClient = require('./utils/influxdb');
