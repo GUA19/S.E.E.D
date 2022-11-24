@@ -45,12 +45,10 @@ class WebSocketServer {
             case 'sensor_reading':
                 this.subSensorReadingMap.set(ws, true)
                 console.log("Sending Sensor Reading!")
-                this.broadcastSensorReading();
                 break;
             case 'sitting_posture':
                 this.subSittingPostureMap.set(ws, true)
                 console.log("Sending Sitting Posture!")
-                this.broadcastSittingPosture();
             default:
                 break;
         }

@@ -16,6 +16,11 @@ class Device {
             // update posture analysis every 5s
             this.updatePosture()
         }, 5 * 1000);
+        setInterval(() => {
+            // broadcast web socket data every 1s
+            globalWebSocket.broadcastSensorReading()
+            globalWebSocket.broadcastSittingPosture()
+        }, 1000);
         this.writeApi = globalInfluxClient.getWriteApi();
         this.WSTokens = {}
     }

@@ -4,21 +4,6 @@ const bodyParser = require('body-parser');
 const app = express()
 const port = 80
 
-// authentication
-var { expressjwt: expressJwt } = require('express-jwt');
-var jwks = require('jwks-rsa');
-var jwtCheck = expressJwt({
-    secret: jwks.expressJwtSecret({
-        cache: true,
-        rateLimit: true,
-        jwksRequestsPerMinute: 5,
-        jwksUri: 'https://dev-tiaw1wsapmz8vlky.us.auth0.com/.well-known/jwks.json'
-    }),
-    audience: 'http://34.172.137.39/api',
-    issuer: 'https://dev-tiaw1wsapmz8vlky.us.auth0.com/',
-    algorithms: ['RS256']
-});
-// app.use(jwtCheck);
 app.get('/api/authorized', function (req, res) {
     res.send('Secured Resource');
 });

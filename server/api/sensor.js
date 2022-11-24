@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router();
-var jwtAuthz = require('express-jwt-authz');
-var scopeCheck = jwtAuthz(['read:db'], { customUserKey: 'auth' })
 
 // TODO: delete this api
 router.get('/', async (req, res) => {
