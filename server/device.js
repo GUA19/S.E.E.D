@@ -23,6 +23,11 @@ class Device {
         }, 1000);
         this.writeApi = globalInfluxClient.getWriteApi();
         this.WSTokens = {}
+
+        this.testTimer = 0
+        // if the temperature not reaching the threshold, the test timer start once force sensor been activated
+        this.actualTimer = 0
+        // start the actual timer if the force sensor been activated and the temperature is above the threshold
     }
 
     updateForceSensorReading(fsr0, fsr1, fsr2, fsr3) {
@@ -71,9 +76,21 @@ class Device {
         return this.sensors
     }
 
-    // ['not_sitting', 'upright', 'leaning_back', 'leaning_forward', 'leaning_right_or_Left', 'one_leg_over_the_other', 'sitting_at_the_front_edge']
+    // ['not_sitting', 'upright', 'leaning_backward', 'leaning_forward', 'leaning_sideways', 'one_leg_over_the_other', 'sitting_at_the_front_edge']
     updatePosture() {
+        // if (this.sensors.temp0 >= 24 && this.sensors.temp0 >= 24) {
+        //     if (this.sensors.fsr0 <= 800 && this.sensors.fsr1 <= 800 && this.sensors.fsr2 <= 800 && this.sensors.fsr3 <= 800) {
+        //         setInterval(() => {
+        //             if (this.sensors.fsr0 <= 800 && this.sensors.fsr1 <= 800 && this.sensors.fsr2 <= 800 && this.sensors.fsr3 <= 800) {
+        //                 this.posture = 'upright'
+        //         }
+        //         }, 5 * 1000);
+        //     } else if () {
 
+        //     } else if () {
+
+        //     }
+        // }
     }
 
     getPosture() {
