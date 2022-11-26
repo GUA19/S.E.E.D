@@ -30,6 +30,12 @@ router.get('/', async (req, res) => {
     return
 })
 
+router.post('/calibrate', async (req, res) => {
+    globalDevice.calibrateForceSensors()
+    res.status(200).send('Force sensors successfully calibrated!')
+    return
+})
+
 router.post('/', async (req, res) => {
     let result0 = false
     let result1 = false

@@ -1,8 +1,14 @@
 const { Point } = require('@influxdata/influxdb-client')
 
+const TESTTIMERID = 'test'
+const ACTUALTIMERID = 'actual'
+const FORCESENSORTHRESHOLD = 500
+const TEMPSENSORTHRESHOLD = 24
+
 class Device {
     constructor(id) {
         this.id = id;
+        this.WSTokens = {}
         this.sensors = {
             fsr0: 0,
             fsr1: 0,
@@ -11,23 +17,94 @@ class Device {
             temp0: 0,
             temp1: 0,
         };
+        this.offset = {
+            fsr0: 0,
+            fsr1: 0,
+            fsr2: 0,
+            fsr3: 0,
+        }
         this.posture = "not_sitting";
+        this.writeApi = globalInfluxClient.getWriteApi();
         setInterval(() => {
             // update posture analysis every 5s
             this.updatePosture()
         }, 5 * 1000);
         setInterval(() => {
-            // broadcast web socket data every 1s
+            // check timer status every 0.5s
+            this.handleTimers()
+            // broadcast data to websocket every 0.5s
             globalWebSocket.broadcastSensorReading()
-            globalWebSocket.broadcastSittingPosture()
-        }, 1000);
-        this.writeApi = globalInfluxClient.getWriteApi();
-        this.WSTokens = {}
+        }, 500);
 
         this.testTimer = 0
-        // if the temperature not reaching the threshold, the test timer start once force sensor been activated
+        this.testTimerOn = false
+        this.testInterval = null
         this.actualTimer = 0
-        // start the actual timer if the force sensor been activated and the temperature is above the threshold
+        this.actualTimerOn = false
+        this.actualInterval = null
+    }
+
+    handleTimers() {
+        if ((this.sensors.fsr0 - this.offset.fsr0) >= FORCESENSORTHRESHOLD || 
+            (this.sensors.fsr1 - this.offset.fsr1) >= FORCESENSORTHRESHOLD || 
+            (this.sensors.fsr2 - this.offset.fsr2) >= FORCESENSORTHRESHOLD || 
+            (this.sensors.fsr3 - this.offset.fsr3) >= FORCESENSORTHRESHOLD ) {
+            // some one is sitting on the device.
+            if (this.sensors.temp0 <= TEMPSENSORTHRESHOLD && this.sensors.temp0 <= TEMPSENSORTHRESHOLD) {
+                // I am sure this is a human, start actual timer, stop test timer.
+                if (this.testTimerOn && !this.actualTimerOn) {
+                    this.setTimerOff(TESTTIMERID)
+                    this.actualTimer = this.testTimer
+                    this.testTimer = 0
+                    this.setTimerOn(ACTUALTIMERID)
+                }
+            } else {
+                // I am not sure if this is a human or object, start test timer.
+                if (!this.testTimerOn) {
+                    this.setTimerOn(TESTTIMERID)
+                }
+            }
+        } else {
+            // nobody is sitting on the device, stop both timers.
+            if (this.testTimerOn) {
+                this.setTimerOff(TESTTIMERID)
+                this.testTimer = 0
+            }
+            if (this.actualTimerOn) {
+                this.setTimerOff(ACTUALTIMERID)
+                this.actualTimer = 0
+            }
+        }
+    }
+
+    setTimerOn(id) {
+        if (id == TESTTIMERID) {
+            this.testTimerOn = true
+            this.testInterval = setInterval(() => {
+                this.testTimer++
+            }, 1000)
+        } else if (id == ACTUALTIMERID) {
+            this.actualTimerOn = true
+            this.actualInterval = setInterval(() => {
+                this.actualTimer++
+                if (this.actualTimer % 3600 == 0) {
+                    // TODO: send message to user
+                    // `you have been sitting for ${this.actualTimer / 3600} hour(s), please stand up and walk around for a while`
+                }
+            }, 1000)
+        }
+    }
+
+    setTimerOff(id) {
+        if (id == TESTTIMERID) {
+            this.testTimerOn = false
+            clearInterval(this.testInterval)
+            this.testInterval = null
+        } else if (id == ACTUALTIMERID) {
+            this.actualTimerOn = false
+            clearInterval(this.testInterval)
+            this.testInterval = null
+        }
     }
 
     updateForceSensorReading(fsr0, fsr1, fsr2, fsr3) {
@@ -72,25 +149,38 @@ class Device {
         return true
     }
 
+    calibrateForceSensors() {
+        this.offset = {
+            fsr1: this.sensors.fsr1,
+            fsr0: this.sensors.fsr0,
+            fsr2: this.sensors.fsr2,
+            fsr3: this.sensors.fsr3,
+        }
+    }
+
     getSensorReading() {
-        return this.sensors
+        return {
+            fsr0: this.sensors.fsr0 - this.offset.fsr0,
+            fsr1: this.sensors.fsr1 - this.offset.fsr1,
+            fsr2: this.sensors.fsr2 - this.offset.fsr2,
+            fsr3: this.sensors.fsr3 - this.offset.fsr3,
+            temp0: this.sensors.temp0,
+            temp1: this.sensors.temp1,
+        }
     }
 
     // ['not_sitting', 'upright', 'leaning_backward', 'leaning_forward', 'leaning_sideways', 'one_leg_over_the_other', 'sitting_at_the_front_edge']
     updatePosture() {
-        // if (this.sensors.temp0 >= 24 && this.sensors.temp0 >= 24) {
-        //     if (this.sensors.fsr0 <= 800 && this.sensors.fsr1 <= 800 && this.sensors.fsr2 <= 800 && this.sensors.fsr3 <= 800) {
+        //     if (this.sensors.fsr0 >= 700 && this.sensors.fsr1 >= 700 && this.sensors.fsr2 >= 700 && this.sensors.fsr3 >= 700) {
+        //         if (this.posture)
         //         setInterval(() => {
-        //             if (this.sensors.fsr0 <= 800 && this.sensors.fsr1 <= 800 && this.sensors.fsr2 <= 800 && this.sensors.fsr3 <= 800) {
+        //             if (this.sensors.fsr0 >= 700 && this.sensors.fsr1 >= 700 && this.sensors.fsr2 >= 700 && this.sensors.fsr3 >= 700) {
         //                 this.posture = 'upright'
-        //         }
+        //             }
         //         }, 5 * 1000);
         //     } else if () {
-
         //     } else if () {
-
         //     }
-        // }
     }
 
     getPosture() {
