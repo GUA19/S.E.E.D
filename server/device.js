@@ -179,13 +179,13 @@ class Device {
         let x = (this.sensors.fsr1 - this.offset.fsr1) - (this.sensors.fsr0 - this.offset.fsr0) + (this.sensors.fsr3 - this.offset.fsr3) - (this.sensors.fsr2 - this.offset.fsr2)
         let y = (this.sensors.fsr1 - this.offset.fsr1) - (this.sensors.fsr3 - this.offset.fsr3) + (this.sensors.fsr0 - this.offset.fsr0) - (this.sensors.fsr2 - this.offset.fsr2)
         console.log(x,y)
-        if (y > 400) {
+        if (y > 600) {
             return 'sitting_at_the_front_edge'
         } else if (y > 200) {
             return 'leaning_forward'
         } else if (y < -200) {
             if (x > 200 || x < -200) {
-                'one_leg_over_the_other'
+                return 'one_leg_over_the_other'
             } else {
                 return 'leaning_backward'
             }
