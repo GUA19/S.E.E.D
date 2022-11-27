@@ -104,8 +104,8 @@ class Device {
             this.testInterval = null
         } else if (id == ACTUALTIMERID) {
             this.actualTimerOn = false
-            clearInterval(this.testInterval)
-            this.testInterval = null
+            clearInterval(this.actualInterval)
+            this.actualInterval = null
         }
     }
 
