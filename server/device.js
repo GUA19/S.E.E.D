@@ -46,7 +46,7 @@ class Device {
     }
 
     handleTimers() {
-        console.lof(this.testTimerOn, this.testTimer, this.actualTimerOn, this.actualTimer)
+        console.log(this.testTimerOn, this.testTimer, this.actualTimerOn, this.actualTimer)
         if ((this.sensors.fsr0 - this.offset.fsr0) >= FORCESENSORTHRESHOLD || 
             (this.sensors.fsr1 - this.offset.fsr1) >= FORCESENSORTHRESHOLD || 
             (this.sensors.fsr2 - this.offset.fsr2) >= FORCESENSORTHRESHOLD || 
