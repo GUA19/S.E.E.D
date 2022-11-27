@@ -1,5 +1,5 @@
 const { Point } = require('@influxdata/influxdb-client')
-const e = require('express')
+import notifier from './utils/notifier'
 
 const TESTTIMERID = 'test'
 const ACTUALTIMERID = 'actual'
@@ -89,9 +89,11 @@ class Device {
             this.actualTimerOn = true
             this.actualInterval = setInterval(() => {
                 this.actualTimer++
-                if (this.actualTimer % 3600 == 0) {
-                    // TODO: send message to user
-                    // `you have been sitting for ${this.actualTimer / 3600} hour(s), please stand up and walk around for a while.`
+                // set to 1 minute for demo
+                if (this.actualTimer % 60 == 0) {
+                    notifier.pushNotificationToAll('S.E.E.D Notification', `you have been sitting for 
+                    ${this.actualTimer / 60} minute(s), please stand up and walk around for a while.`, 
+                    healthnotification)
                 }
             }, 1000)
         }
@@ -175,8 +177,7 @@ class Device {
         // get coordinate of center of mass
         let x = (this.sensors.fsr1 - this.offset.fsr1) - (this.sensors.fsr0 - this.offset.fsr0) + (this.sensors.fsr3 - this.offset.fsr3) - (this.sensors.fsr2 - this.offset.fsr2)
         let y = (this.sensors.fsr1 - this.offset.fsr1) - (this.sensors.fsr3 - this.offset.fsr3) + (this.sensors.fsr0 - this.offset.fsr0) - (this.sensors.fsr2 - this.offset.fsr2)
-        console.log(x,y)
-        if (y > 600) {
+        if (y > 700) {
             return 'sitting_at_the_front_edge'
         } else if (y > 250) {
             return 'leaning_forward'
