@@ -1,4 +1,5 @@
 const { Point } = require('@influxdata/influxdb-client')
+const e = require('express')
 
 const TESTTIMERID = 'test'
 const ACTUALTIMERID = 'actual'
@@ -26,9 +27,9 @@ class Device {
         this.posture = "not_sitting";
         this.writeApi = globalInfluxClient.getWriteApi();
         setInterval(() => {
-            // update posture analysis every 5s
-            this.updatePosture()
-        }, 5 * 1000);
+            // update posture prediction every 4s
+            this.checkPosture()
+        }, 4 * 1000);
         setInterval(() => {
             // check timer status every 0.5s
             this.handleTimers()
@@ -49,9 +50,9 @@ class Device {
             (this.sensors.fsr1 - this.offset.fsr1) >= FORCESENSORTHRESHOLD || 
             (this.sensors.fsr2 - this.offset.fsr2) >= FORCESENSORTHRESHOLD || 
             (this.sensors.fsr3 - this.offset.fsr3) >= FORCESENSORTHRESHOLD ) {
-            // some one is sitting on the device.
-            if (this.sensors.temp0 <= TEMPSENSORTHRESHOLD && this.sensors.temp0 <= TEMPSENSORTHRESHOLD) {
-                // I am sure this is a human, start actual timer, stop test timer.
+            // Someone is sitting on the device.
+            if (this.sensors.temp0 >= TEMPSENSORTHRESHOLD || this.sensors.temp1 >= TEMPSENSORTHRESHOLD) {
+                // I am sure this is a human, stop test timer, start actual timer.
                 if (this.testTimerOn && !this.actualTimerOn) {
                     this.setTimerOff(TESTTIMERID)
                     this.actualTimer = this.testTimer
@@ -65,7 +66,10 @@ class Device {
                 }
             }
         } else {
-            // nobody is sitting on the device, stop both timers.
+            // Nobody is sitting on the device, stop both timers.
+            if (this.posture != "not_sitting") {
+                this.posture = "not_sitting";
+            }
             if (this.testTimerOn) {
                 this.setTimerOff(TESTTIMERID)
                 this.testTimer = 0
@@ -89,7 +93,7 @@ class Device {
                 this.actualTimer++
                 if (this.actualTimer % 3600 == 0) {
                     // TODO: send message to user
-                    // `you have been sitting for ${this.actualTimer / 3600} hour(s), please stand up and walk around for a while`
+                    // `you have been sitting for ${this.actualTimer / 3600} hour(s), please stand up and walk around for a while.`
                 }
             }, 1000)
         }
@@ -169,18 +173,40 @@ class Device {
         }
     }
 
+    posturePredition() {
+        // get coordinate of center of mass
+        let x = (this.sensors.fsr1 - this.offset.fsr1) - (this.sensors.fsr0 - this.offset.fsr0) + (this.sensors.fsr3 - this.offset.fsr3) - (this.sensors.fsr2 - this.offset.fsr2)
+        let y = (this.sensors.fsr1 - this.offset.fsr1) - (this.sensors.fsr3 - this.offset.fsr3) + (this.sensors.fsr0 - this.offset.fsr0) - (this.sensors.fsr2 - this.offset.fsr2)
+        if (y > 400) {
+            return 'sitting_at_the_front_edge'
+        } else if (y > 200) {
+            return 'leaning_forward'
+        } else if (y < -200) {
+            if (x > 200 || x < -200) {
+                'one_leg_over_the_other'
+            } else {
+                return 'leaning_backward'
+            }
+        } else {
+            if (x > 200 || x < -200) {
+                return 'leaning_sideways'
+            } else {
+                return 'upright'
+            }
+        }
+    }
+
     // ['not_sitting', 'upright', 'leaning_backward', 'leaning_forward', 'leaning_sideways', 'one_leg_over_the_other', 'sitting_at_the_front_edge']
-    updatePosture() {
-        //     if (this.sensors.fsr0 >= 700 && this.sensors.fsr1 >= 700 && this.sensors.fsr2 >= 700 && this.sensors.fsr3 >= 700) {
-        //         if (this.posture)
-        //         setInterval(() => {
-        //             if (this.sensors.fsr0 >= 700 && this.sensors.fsr1 >= 700 && this.sensors.fsr2 >= 700 && this.sensors.fsr3 >= 700) {
-        //                 this.posture = 'upright'
-        //             }
-        //         }, 5 * 1000);
-        //     } else if () {
-        //     } else if () {
-        //     }
+    checkPosture() {
+        let newPosture = this.posturePredition()
+        if (newPosture != this.posture) {
+            setTimeout(() => {
+                if (this.posturePredition() == newPosture) {
+                    this.posture = newPosture
+                    globalWebSocket.broadcastSittingPosture()
+                }
+            }, 3*1000);
+        }
     }
 
     getPosture() {
