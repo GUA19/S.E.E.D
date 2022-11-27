@@ -46,6 +46,7 @@ class Device {
     }
 
     handleTimers() {
+        console.lof(this.testTimerOn, this.testTimer, this.actualTimerOn, this.actualTimer)
         if ((this.sensors.fsr0 - this.offset.fsr0) >= FORCESENSORTHRESHOLD || 
             (this.sensors.fsr1 - this.offset.fsr1) >= FORCESENSORTHRESHOLD || 
             (this.sensors.fsr2 - this.offset.fsr2) >= FORCESENSORTHRESHOLD || 
@@ -177,6 +178,7 @@ class Device {
         // get coordinate of center of mass
         let x = (this.sensors.fsr1 - this.offset.fsr1) - (this.sensors.fsr0 - this.offset.fsr0) + (this.sensors.fsr3 - this.offset.fsr3) - (this.sensors.fsr2 - this.offset.fsr2)
         let y = (this.sensors.fsr1 - this.offset.fsr1) - (this.sensors.fsr3 - this.offset.fsr3) + (this.sensors.fsr0 - this.offset.fsr0) - (this.sensors.fsr2 - this.offset.fsr2)
+        console.log(x,y)
         if (y > 400) {
             return 'sitting_at_the_front_edge'
         } else if (y > 200) {
