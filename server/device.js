@@ -181,16 +181,16 @@ class Device {
         console.log(x,y)
         if (y > 600) {
             return 'sitting_at_the_front_edge'
-        } else if (y > 200) {
+        } else if (y > 250) {
             return 'leaning_forward'
-        } else if (y < -200) {
-            if (x > 200 || x < -200) {
+        } else if (y < -250) {
+            if (x > 250 || x < -250) {
                 return 'one_leg_over_the_other'
             } else {
                 return 'leaning_backward'
             }
         } else {
-            if (x > 200 || x < -200) {
+            if (x > 250 || x < -250) {
                 return 'leaning_sideways'
             } else {
                 return 'upright'
@@ -200,14 +200,18 @@ class Device {
 
     // ['not_sitting', 'upright', 'leaning_backward', 'leaning_forward', 'leaning_sideways', 'one_leg_over_the_other', 'sitting_at_the_front_edge']
     checkPosture() {
-        let newPosture = this.posturePredition()
-        if (newPosture != this.posture) {
-            setTimeout(() => {
-                if (this.posturePredition() == newPosture) {
-                    this.posture = newPosture
-                    globalWebSocket.broadcastSittingPosture()
-                }
-            }, 3*1000);
+        if (this.testTimerOn || this.actualTimerOn) {
+            // check sitting posture only if someone sitting on it
+            let newPosture = this.posturePredition()
+            console.log(newPosture)
+            if (newPosture != this.posture) {
+                setTimeout(() => {
+                    if (this.posturePredition() == newPosture) {
+                        this.posture = newPosture
+                        globalWebSocket.broadcastSittingPosture()
+                    }
+                }, 3 * 1000);
+            }
         }
     }
 
