@@ -68,9 +68,6 @@ class Device {
             }
         } else {
             // Nobody is sitting on the device, stop both timers.
-            if (this.posture != "not_sitting") {
-                this.posture = "not_sitting";
-            }
             if (this.testTimerOn) {
                 this.setTimerOff(TESTTIMERID)
                 this.testTimer = 0
@@ -211,6 +208,11 @@ class Device {
                         globalWebSocket.broadcastSittingPosture()
                     }
                 }, 3 * 1000);
+            }
+        } else {
+            if (this.posture != "not_sitting") {
+                this.posture = "not_sitting";
+                globalWebSocket.broadcastSittingPosture()
             }
         }
     }
