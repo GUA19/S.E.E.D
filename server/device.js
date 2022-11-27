@@ -91,8 +91,8 @@ class Device {
                 this.actualTimer++
                 // set to 1 minute for demo
                 if (this.actualTimer % 60 == 0) {
-                    Notifier.pushNotificationToAll('S.E.E.D Notification', `you have been sitting for 
-                    ${this.actualTimer / 60} minute(s), please stand up and walk around for a while.`, 
+                    Notifier.pushNotificationToAll('S.E.E.D Notification', 
+                    `you have been sitting for ${this.actualTimer / 60} minute(s), please stand up and walk around for a while.`, 
                     "healthnotification")
                 }
             }, 1000)
